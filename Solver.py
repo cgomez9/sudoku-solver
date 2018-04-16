@@ -2,29 +2,32 @@ from SudokuBoard import SudokuBoard
 
 class Solver:
 
-    def __init__(self):
-        self.sudokuBoards = []
-        self.solutions = []
-
     def solve(self,boardString):
         sudokuBoard = SudokuBoard()
         sudokuBoard.fromString(boardString)
+        return self.AC3(sudokuBoard)
 
-    def AC3(csp, queue=None):
-        queue = [(Xi, Xk) for Xi in csp.vars for Xk in csp.neighbors[Xi]]
+    def AC3(self,sudokuBoard):
+        queue = [(xi, xj) for xi in sudokuBoard.getAllVars() for xj in sudokuBoard.getArcs(xi)]
         while queue:
-            (Xi, Xj) = queue.pop()
-            if remove_inconsistent_values(csp, Xi, Xj):
-                for Xk in csp.neighbors[Xi]:
-                    queue.append((Xk, Xi))
+            (xi, xj) = queue.pop()
+            if self.revise(sudokuBoard, xi, xj):
+                if len(sudokuBoard.getDomain(xi)) == 0:
+                    return False
+                for xk in sudokuBoard.getArcs(xi):
+                    if xk != xj:
+                        queue.append((xk, xi))
+        return True
 
-    def remove_inconsistent_values(csp, Xi, Xj):
-        "Return true if we remove a value."
-        removed = False
-        for x in csp.curr_domains[Xi][:]:
-            # If Xi=x conflicts with Xj=y for every possible y, eliminate Xi=x
-            if every(lambda y: not csp.constraints(Xi, x, Xj, y),
-                    csp.curr_domains[Xj]):
-                csp.curr_domains[Xi].remove(x)
-                removed = True
-        return removed
+    def revise(self,sudokuBoard, xi, xj):
+        revised = False
+        for x in sudokuBoard.getDomain(xi):
+            satisfied = False
+            for y in sudokuBoard.getDomain(xj):
+                if x != y:
+                    satisfied = True
+                    break
+            if not satisfied:
+                sudokuBoard.deleteDomainElement(xi,x)
+                revised = True
+        return revised

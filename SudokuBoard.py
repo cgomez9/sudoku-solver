@@ -17,8 +17,20 @@ class SudokuBoard:
     def char_range(c1, c2):
         yield from range(ord(c1), ord(c2)+1)
 
+    def getArcs(self,x):
+        return self._neighbors[x]
+
     def getVar(self,var):
         return self._board[var]
+
+    def getAllVars(self):
+        return self._board
+
+    def getDomain(self,x):
+        return self._domains[x]
+
+    def deleteDomainElement(self,x,e):
+        self._domains[x].remove(e)
 
     def fillCPS(self):
         for c in self.char_range('A', 'I'):
@@ -32,8 +44,9 @@ class SudokuBoard:
         allNeighbors += self.getRowsNeighbors(x1)
         allNeighbors += self.getColumnsNeighbors(x1)
         allNeighbors += self.getBoxNeighbors(x1)
+        allNeighbors = list(set(allNeighbors))
         print(allNeighbors)
-        raise Exception
+        print("")
         return allNeighbors
 
     def getRowsNeighbors(self,x1):
@@ -62,7 +75,7 @@ class SudokuBoard:
             if row in group:
                 columnGroup = int(x1[1]) / 3
                 for rgroup in group:
-                    for column in range(columnGroup * 3, columnGroup * 3 + 3):
+                    for column in range(int(columnGroup * 3), int(columnGroup * 3 + 3)):
                         x = str(rgroup) + str(column)
                         if x1 != x:
                             boxNeighbors.append(x)
