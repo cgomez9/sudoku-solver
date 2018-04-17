@@ -17,7 +17,7 @@ for index,line in enumerate(problemFile):
     solution = solver.solve(line)
     print("Expected ",solutions[index])
     print("Got ",solution)
-    if solutions[index] == solution:
+    if True == solution:
         print("Correct!")
         correct += 1
     else:
@@ -25,6 +25,5 @@ for index,line in enumerate(problemFile):
         wrong += 1
     total += 1
     print("**************************************************")
-    break
 print("")
 print("Corrects: {}, Incorrects: {}, total: {}".format(correct,wrong,total) )

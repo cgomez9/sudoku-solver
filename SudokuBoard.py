@@ -1,10 +1,11 @@
+from math import floor
+
 class SudokuBoard:
 
     def __init__(self):
         self._board = {}
         self._domains = {}
         self._neighbors = {}
-        self.fillCPS()
 
     def fromString(self,boardString):
         i = 0
@@ -12,6 +13,7 @@ class SudokuBoard:
             for number in range(0,9):
                 self._board[chr(c)+str(number)] = int(boardString[i])
                 i += 1
+        self.fillCPS()
 
     @staticmethod
     def char_range(c1, c2):
@@ -36,7 +38,9 @@ class SudokuBoard:
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
                 xi = chr(c)+str(number)
-                self._domains[xi] = [0,1,2,3,4,5,6,7,8]
+                self._domains[xi] = [1,2,3,4,5,6,7,8,9]
+                if self._board[xi] != 0:
+                    self._domains[xi].remove(self._board[xi])
                 self._neighbors[xi] = self.getNeighbors(xi)
 
     def getNeighbors(self,x1):
@@ -45,8 +49,6 @@ class SudokuBoard:
         allNeighbors += self.getColumnsNeighbors(x1)
         allNeighbors += self.getBoxNeighbors(x1)
         allNeighbors = list(set(allNeighbors))
-        print(allNeighbors)
-        print("")
         return allNeighbors
 
     def getRowsNeighbors(self,x1):
@@ -73,7 +75,7 @@ class SudokuBoard:
         rowGroups = (('A','B','C'),('D','E','F'),('G','H','I'))
         for group in rowGroups:
             if row in group:
-                columnGroup = int(x1[1]) / 3
+                columnGroup = floor(int(x1[1]) / 3)
                 for rgroup in group:
                     for column in range(int(columnGroup * 3), int(columnGroup * 3 + 3)):
                         x = str(rgroup) + str(column)
@@ -81,3 +83,17 @@ class SudokuBoard:
                             boxNeighbors.append(x)
                 break
         return boxNeighbors
+
+    def constrain(self,x1,x,y1,y):
+        return x != y and self.allNeighborsConstrain(x1,x,y1,y)
+
+    def allNeighborsConstrain(self,x1,x,y1,y):
+        xneighbors = self.getNeighbors(x1)
+        yneighbors = self.getNeighbors(y1)
+        for neighbor in xneighbors:
+            if neighbor != y and x == self._board[neighbor]:
+                return False
+        for neighbor in yneighbors:
+            if neighbor != x and y == self._board[neighbor]:
+                return False
+        return True
