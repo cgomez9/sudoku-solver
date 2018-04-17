@@ -1,4 +1,5 @@
 from math import floor
+import time
 
 class SudokuBoard:
 
@@ -38,9 +39,10 @@ class SudokuBoard:
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
                 xi = chr(c)+str(number)
-                self._domains[xi] = [1,2,3,4,5,6,7,8,9]
                 if self._board[xi] != 0:
-                    self._domains[xi].remove(self._board[xi])
+                    self._domains[xi] = [int(self._board[xi])]
+                else:
+                    self._domains[xi] = [1,2,3,4,5,6,7,8,9]
                 self._neighbors[xi] = self.getNeighbors(xi)
 
     def getNeighbors(self,x1):
@@ -84,16 +86,5 @@ class SudokuBoard:
                 break
         return boxNeighbors
 
-    def constrain(self,x1,x,y1,y):
-        return x != y and self.allNeighborsConstrain(x1,x,y1,y)
-
-    def allNeighborsConstrain(self,x1,x,y1,y):
-        xneighbors = self.getNeighbors(x1)
-        yneighbors = self.getNeighbors(y1)
-        for neighbor in xneighbors:
-            if neighbor != y and x == self._board[neighbor]:
-                return False
-        for neighbor in yneighbors:
-            if neighbor != x and y == self._board[neighbor]:
-                return False
-        return True
+    def constraint(self,x,y):
+        return x != y

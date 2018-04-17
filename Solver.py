@@ -13,32 +13,23 @@ class Solver:
         queue = [(xi, xj) for xi in sudokuBoard.getAllVars() for xj in sudokuBoard.getArcs(xi)]
         while queue:
             (xi, xj) = queue.pop()
-            #print("Procesando el arco: ",xi,xj)
             if self.revise(sudokuBoard, xi, xj):
-                #time.sleep(3)
-                #print("Revise TRUE")
                 if len(sudokuBoard.getDomain(xi)) == 0:
                     return False
                 for xk in sudokuBoard.getArcs(xi):
                     if xk != xj:
                         queue.append((xk, xi))
+        for element,domain in sudokuBoard._domains.items():
+            print(element, domain)
+        time.sleep(40)
         return True
 
     def revise(self,sudokuBoard, xi, xj):
-        #time.sleep(10)
-        #print("**Entramos en revise**")
         revised = False
-        #print("Dominio de: ",xi)
-        #print(sudokuBoard.getDomain(xi))
-        #print("Dominio de: ",xj)
-        #print(sudokuBoard.getDomain(xj))
+        print(sudokuBoard.getDomain(xi))
+        print(sudokuBoard.getDomain(xj))
         for x in sudokuBoard.getDomain(xi):
-            satisfied = False
-            for y in sudokuBoard.getDomain(xj):
-                if sudokuBoard.constrain(xi,x,xj,y):
-                    satisfied = True
-                    break
-            if not satisfied:
+            if not any([sudokuBoard.constraint(x, y) for y in sudokuBoard.getDomain(xj)]):
                 sudokuBoard.deleteDomainElement(xi,x)
                 revised = True
         return revised
