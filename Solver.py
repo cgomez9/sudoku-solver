@@ -36,3 +36,17 @@ class Solver:
         if sudokuBoard.isComplete():
             return sudokuBoard.toString()
         emptyPosition = sudokuBoard.findEmptyPosition()
+        for value in sudokuBoard.getDomain(emptyPosition):
+            neighbors = sudokuBoard.getArcs(emptyPosition)
+            consistent = True
+            for neighbor in neighbors:
+                if sudokuBoard.getVar(neighbor) == value:
+                    consistent = False
+                    break
+            if consistent:
+                sudokuBoard.setVar(emptyPosition,value)
+                result = self.backtrack(sudokuBoard)
+                if result:
+                    return result
+                sudokuBoard.setVar(emptyPosition,0)
+        return False

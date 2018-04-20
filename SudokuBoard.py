@@ -26,6 +26,9 @@ class SudokuBoard:
     def getVar(self,var):
         return self._board[var]
 
+    def setVar(self,var,value):
+        self._board[var] = value
+
     def getAllVars(self):
         return list(self._board.keys())
 
