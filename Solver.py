@@ -35,3 +35,4 @@ class Solver:
     def backtrack(self,sudokuBoard):
         if sudokuBoard.isComplete():
             return sudokuBoard.toString()
+        emptyPosition = sudokuBoard.findEmptyPosition()

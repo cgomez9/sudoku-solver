@@ -94,3 +94,10 @@ class SudokuBoard:
 
     def toString(self):
         return "".join([str(value) for value in self._board.values()])
+
+    def findEmptyPosition(self):
+        for c in self.char_range('A', 'I'):
+            for number in range(0,9):
+                xi = chr(c)+str(number)
+                if self._board[xi] != 0:
+                    return xi
