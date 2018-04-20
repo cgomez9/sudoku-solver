@@ -19,23 +19,19 @@ class Solver:
                 for xk in sudokuBoard.getArcs(xi):
                     if xk != xj:
                         queue.append((xk, xi))
-        for element,domain in sudokuBoard._domains.items():
-            print(element, domain)
-        time.sleep(40)
         return True
 
     def revise(self,sudokuBoard, xi, xj):
         revised = False
-        print(sudokuBoard.getDomain(xi))
-        print(sudokuBoard.getDomain(xj))
         for x in sudokuBoard.getDomain(xi):
             if not any([sudokuBoard.constraint(x, y) for y in sudokuBoard.getDomain(xj)]):
                 sudokuBoard.deleteDomainElement(xi,x)
                 revised = True
         return revised
 
-    def backtracking_search(self):
-        pass
+    def backtracking_search(self, sudokuBoard):
+        return self.backtrack(sudokuBoard)
 
-    def backtrack(self):
-        pass
+    def backtrack(self,sudokuBoard):
+        if sudokuBoard.isComplete():
+            return sudokuBoard.toString()

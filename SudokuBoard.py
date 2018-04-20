@@ -27,7 +27,7 @@ class SudokuBoard:
         return self._board[var]
 
     def getAllVars(self):
-        return self._board
+        return list(self._board.keys())
 
     def getDomain(self,x):
         return self._domains[x]
@@ -88,3 +88,9 @@ class SudokuBoard:
 
     def constraint(self,x,y):
         return x != y
+
+    def isComplete(self):
+        return 0 not in self._board.values()
+
+    def toString(self):
+        return "".join([str(value) for value in self._board.values()])
