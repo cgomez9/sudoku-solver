@@ -7,7 +7,10 @@ class Solver:
     def solve(self,boardString):
         sudokuBoard = SudokuBoard()
         sudokuBoard.fromString(boardString)
-        return self.AC3(sudokuBoard)
+        if self.AC3(sudokuBoard):
+            return sudokuBoard.toString('AC3')
+        else:
+            return self.backtracking_search(sudokuBoard)
 
     def AC3(self,sudokuBoard):
         queue = [(xi, xj) for xi in sudokuBoard.getAllVars() for xj in sudokuBoard.getArcs(xi)]
@@ -19,7 +22,10 @@ class Solver:
                 for xk in sudokuBoard.getArcs(xi):
                     if xk != xj:
                         queue.append((xk, xi))
-        return True
+        if sudokuBoard.tryToSolveFromDomains():
+            return True
+        else:
+            return False;
 
     def revise(self,sudokuBoard, xi, xj):
         revised = False
@@ -45,8 +51,12 @@ class Solver:
                     break
             if consistent:
                 sudokuBoard.setVar(emptyPosition,value)
-                result = self.backtrack(sudokuBoard)
-                if result:
-                    return result
+                emptyPositionDomain = sudokuBoard.getDomain(emptyPosition)
+                inference = sudokuBoard.setDomain(emptyPosition,[value])
+                if inference:
+                    result = self.backtrack(sudokuBoard)
+                    if result:
+                        return result
                 sudokuBoard.setVar(emptyPosition,0)
+                sudokuBoard.setDomain(emptyPosition,emptyPositionDomain)
         return False

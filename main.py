@@ -1,29 +1,10 @@
 from Solver import Solver
 
-problemFile = open("sudokus_start.txt", "r")
-solutionFile = open("sudokus_finish.txt", "r")
-solutions = []
-correct = 0
-wrong = 0
-total = 0
-
-for line in solutionFile:
-    solutions.append(str(line))
+initialSudoku = sys.argv[1]
 
 solver = Solver()
+solution = solver.solve(initialSudoku)
 
-for index,line in enumerate(problemFile):
-    print("Testing ",line)
-    solution = solver.solve(line)
-    print("Expected ",solutions[index])
-    print("Got ",solution)
-    if True == solution:
-        print("Correct!")
-        correct += 1
-    else:
-        print("Wrong!")
-        wrong += 1
-    total += 1
-    print("**************************************************")
-print("")
-print("Corrects: {}, Incorrects: {}, total: {}".format(correct,wrong,total) )
+file = open("output.txt","w")
+file.write(solution)
+file.close()

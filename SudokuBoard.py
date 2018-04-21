@@ -35,6 +35,17 @@ class SudokuBoard:
     def getDomain(self,x):
         return self._domains[x]
 
+    def setDomain(self,x,value):
+        self._domains[x] = value
+        neighbors = self.getArcs(x)
+        for neighbor in neighbors:
+            domainCopy = list(self._domains[neighbor])
+            if value in domainCopy:
+                domainCopy.remove(e)
+                if len(domainCopy) == 0:
+                    return False
+        return True
+
     def deleteDomainElement(self,x,e):
         self._domains[x].remove(e)
 
@@ -95,12 +106,32 @@ class SudokuBoard:
     def isComplete(self):
         return 0 not in self._board.values()
 
-    def toString(self):
-        return "".join([str(value) for value in self._board.values()])
+    def toString(self,algo = 'BTS'):
+        solution = ''
+        for c in self.char_range('A', 'I'):
+            for number in range(0,9):
+                solution += str(self._board[chr(c)+str(number)])
+        return solution + ' ' + algo
 
     def findEmptyPosition(self):
+        minDomain = 10
+        minElement = ''
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
                 xi = chr(c)+str(number)
-                if self._board[xi] != 0:
-                    return xi
+                if self._board[xi] == 0 and len(self._domains[xi]) < minDomain:
+                    minDomain = len(self._domains[xi])
+                    minElement = xi
+                    if minDomain == 1:
+                        return minElement
+        return minElement
+
+    def tryToSolveFromDomains(self):
+        for c in self.char_range('A', 'I'):
+            for number in range(0,9):
+                xi = chr(c)+str(number)
+                if len(self._domains[xi]) == 1:
+                    self._board[xi] = self._domains[xi][0]
+                else:
+                    return False
+        return True
