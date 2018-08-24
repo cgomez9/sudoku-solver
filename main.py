@@ -1,9 +1,9 @@
 from Solver import Solver
 
-initialSudoku = sys.argv[1]
+initial_sudoku = sys.argv[1]
 
 solver = Solver()
-solution = solver.solve(initialSudoku)
+solution = solver.solve(initial_sudoku)
 
 file = open("output.txt","w")
 file.write(solution)

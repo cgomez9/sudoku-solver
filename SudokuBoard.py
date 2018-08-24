@@ -8,48 +8,48 @@ class SudokuBoard:
         self._domains = {}
         self._neighbors = {}
 
-    def fromString(self,boardString):
+    def from_string(self,board_string):
         i = 0
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
-                self._board[chr(c)+str(number)] = int(boardString[i])
+                self._board[chr(c)+str(number)] = int(board_string[i])
                 i += 1
-        self.fillCPS()
+        self.fill_cps()
 
     @staticmethod
     def char_range(c1, c2):
         yield from range(ord(c1), ord(c2)+1)
 
-    def getArcs(self,x):
+    def get_arcs(self,x):
         return self._neighbors[x]
 
-    def getVar(self,var):
+    def get_var(self,var):
         return self._board[var]
 
-    def setVar(self,var,value):
+    def set_var(self,var,value):
         self._board[var] = value
 
-    def getAllVars(self):
+    def get_all_vars(self):
         return list(self._board.keys())
 
-    def getDomain(self,x):
+    def get_domain(self,x):
         return self._domains[x]
 
-    def setDomain(self,x,value):
+    def set_domain(self,x,value):
         self._domains[x] = value
-        neighbors = self.getArcs(x)
+        neighbors = self.get_arcs(x)
         for neighbor in neighbors:
-            domainCopy = list(self._domains[neighbor])
-            if value in domainCopy:
-                domainCopy.remove(e)
-                if len(domainCopy) == 0:
+            domain_copy = list(self._domains[neighbor])
+            if value in domain_copy:
+                domain_copy.remove(e)
+                if len(domain_copy) == 0:
                     return False
         return True
 
-    def deleteDomainElement(self,x,e):
+    def delete_domain_element(self,x,e):
         self._domains[x].remove(e)
 
-    def fillCPS(self):
+    def fill_cps(self):
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
                 xi = chr(c)+str(number)
@@ -57,76 +57,76 @@ class SudokuBoard:
                     self._domains[xi] = [int(self._board[xi])]
                 else:
                     self._domains[xi] = [1,2,3,4,5,6,7,8,9]
-                self._neighbors[xi] = self.getNeighbors(xi)
+                self._neighbors[xi] = self.get_neighbors(xi)
 
-    def getNeighbors(self,x1):
-        allNeighbors = []
-        allNeighbors += self.getRowsNeighbors(x1)
-        allNeighbors += self.getColumnsNeighbors(x1)
-        allNeighbors += self.getBoxNeighbors(x1)
-        allNeighbors = list(set(allNeighbors))
-        return allNeighbors
+    def get_neighbors(self,x1):
+        all_neighbors = []
+        all_neighbors += self.get_rows_neighbors(x1)
+        all_neighbors += self.get_columns_neighbors(x1)
+        all_neighbors += self.get_box_neighbors(x1)
+        all_neighbors = list(set(all_neighbors))
+        return all_neighbors
 
-    def getRowsNeighbors(self,x1):
-        rowNeighbors = []
+    def get_rows_neighbors(self,x1):
+        row_neighbors = []
         row = x1[0]
         for i in range(9):
             neighbor = row + str(i)
             if neighbor != x1:
-                rowNeighbors.append(neighbor)
-        return rowNeighbors
+                row_neighbors.append(neighbor)
+        return row_neighbors
 
-    def getColumnsNeighbors(self,x1):
-        columnNeighbors = []
+    def get_columns_neighbors(self,x1):
+        column_neighbors = []
         column = x1[1]
         for c in self.char_range('A', 'I'):
             neighbor = chr(c) + column
             if neighbor != x1:
-                columnNeighbors.append(neighbor)
-        return columnNeighbors
+                column_neighbors.append(neighbor)
+        return column_neighbors
 
-    def getBoxNeighbors(self,x1):
-        boxNeighbors = []
+    def get_box_neighbors(self,x1):
+        box_neighbors = []
         row = x1[0]
-        rowGroups = (('A','B','C'),('D','E','F'),('G','H','I'))
-        for group in rowGroups:
+        row_groups = (('A','B','C'),('D','E','F'),('G','H','I'))
+        for group in row_groups:
             if row in group:
-                columnGroup = floor(int(x1[1]) / 3)
+                column_groups = floor(int(x1[1]) / 3)
                 for rgroup in group:
-                    for column in range(int(columnGroup * 3), int(columnGroup * 3 + 3)):
+                    for column in range(int(column_groups * 3), int(column_groups * 3 + 3)):
                         x = str(rgroup) + str(column)
                         if x1 != x:
-                            boxNeighbors.append(x)
+                            box_neighbors.append(x)
                 break
-        return boxNeighbors
+        return box_neighbors
 
     def constraint(self,x,y):
         return x != y
 
-    def isComplete(self):
+    def is_complete(self):
         return 0 not in self._board.values()
 
-    def toString(self,algo = 'BTS'):
+    def to_string(self,algo = 'BTS'):
         solution = ''
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
                 solution += str(self._board[chr(c)+str(number)])
         return solution + ' ' + algo
 
-    def findEmptyPosition(self):
-        minDomain = 10
-        minElement = ''
+    def find_empty_position(self):
+        min_domain = 10
+        min_element = ''
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
                 xi = chr(c)+str(number)
-                if self._board[xi] == 0 and len(self._domains[xi]) < minDomain:
-                    minDomain = len(self._domains[xi])
-                    minElement = xi
-                    if minDomain == 1:
-                        return minElement
-        return minElement
+                if self._board[xi] == 0 and len(self._domains[xi]) < min_domain:
+                    min_domain = len(self._domains[xi])
+                    min_element = xi
+                    if min_domain == 1:
+                        return min_element
+        return min_element
 
-    def tryToSolveFromDomains(self):
+    def try_to_solve_from_domains(self):
         for c in self.char_range('A', 'I'):
             for number in range(0,9):
                 xi = chr(c)+str(number)
